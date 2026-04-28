@@ -108,6 +108,8 @@ async def predict(
 
     filename = f"upload_{datetime.utcnow().strftime('%Y%m%d%H%M%S%f')}_{file.filename}"
     filepath = UPLOAD_DIR / filename
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     with open(filepath, "wb") as f:
         f.write(contents)
 
