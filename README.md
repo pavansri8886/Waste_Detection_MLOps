@@ -293,16 +293,16 @@ docker compose exec airflow airflow dags list-runs \
 ### Unit tests + integration test pass in pipeline `0.75 + 0.75 pt`
 
 ```bash
-gh run view --repo <your-repo> --log | grep -E "(test_unit|test_integration|PASSED|FAILED)"
+gh run view --repo pavansri8886/Waste_Detection_MLOps --log | grep -E "(test_unit|test_integration|PASSED|FAILED)"
 # Expected: pytest steps successful
 ```
 
-`[VISUAL]` https://github.com/<your-repo>/actions — `pytest test_unit.py` and `pytest test_integration.py` steps in green
+`[VISUAL]` https://github.com/pavansri8886/Waste_Detection_MLOps/actions — `pytest test_unit.py` and `pytest test_integration.py` steps in green
 
 ### Build + push Docker image to public registry `1 pt`
 
 ```bash
-docker pull <registry>/<image>:latest
+docker pull ghcr.io/pavansri8886/waste-api:latest
 # Must download without error
 ```
 
