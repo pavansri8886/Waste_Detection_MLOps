@@ -1,8 +1,12 @@
 import os
+import sys
 from pathlib import Path
 from fastapi.testclient import TestClient
 
-os.environ.setdefault("API_DATA_DIR", str(Path(__file__).resolve().parents[2] / "data"))
+ROOT_DIR = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT_DIR))
+
+os.environ.setdefault("API_DATA_DIR", str(ROOT_DIR / "data"))
 
 from api.main import app, DB_PATH
 import sqlite3
