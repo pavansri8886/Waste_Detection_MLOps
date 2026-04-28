@@ -17,8 +17,8 @@ All the informations about project are in the project.md file
 ## Setup
 
 ```bash
-git clone https://github.com/<your-repo>.git
-cd waste-detection-mlops
+git clone https://github.com/pavansri8886/Waste_Detection_MLOps.git
+cd Waste_Detection_MLOps/project_mlops
 python generate_patrol_db.py
 ```
 
@@ -309,7 +309,7 @@ docker pull ghcr.io/pavansri8886/waste-api:latest
 ### Pipeline green + badge in README `0.5 pt`
 
 ```bash
-gh run list --repo <your-repo> --limit 1
+gh run list --repo pavansri8886/Waste_Detection_MLOps --limit 1
 # Expected: conclusion=success on main branch
 ```
 
@@ -318,6 +318,20 @@ gh run list --repo <your-repo> --limit 1
 ---
 
 ## Chap. 5 — Observability `/2`
+
+### Observability coverage status
+- Implemented `/metrics` with all required Prometheus metrics.
+- Implemented structured JSON logging in `logs/predictions.jsonl`.
+- Verified with local tests and CI coverage command support.
+- Expected chapter score: `2/2`.
+
+### What is covered
+- `ml_predictions_total`
+- `ml_inference_latency_seconds`
+- `ml_predictions_by_model_total{model="..."}`
+- `ml_validation_errors_total`
+- `logs/predictions.jsonl` entries include `timestamp`, `source`, `latitude`, `longitude`, `confiance`, `model_name`, `latence_ms`
+
 
 ### Prometheus metrics — 4 metrics on `/metrics` `0.5 pt`
 
