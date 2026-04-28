@@ -2,13 +2,13 @@
 
 All the informations about project are in the project.md file
 
-**Based Repo**: https://github.com/sinaayyy/project_mlops
+**Based Repo**: https://github.com/pavansri8886/Waste_Detection_MLOps
 
 
 **Members**: [First Last 1] · [First Last 2]
-**Repo**: `https://github.com/<your-repo>`
+**Repo**: `https://github.com/pavansri8886/Waste_Detection_MLOps`
 
-![CI/CD](https://github.com/<your-repo>/actions/workflows/ci.yml/badge.svg)
+![CI/CD](https://github.com/pavansri8886/Waste_Detection_MLOps/actions/workflows/ci.yml/badge.svg)
 
 > **For the grader**: clone the repo, generate the drone database, start the stack, then follow the commands section by section. Criteria marked `[VISUAL]` are evaluated through the UI or the GitHub repository.
 
