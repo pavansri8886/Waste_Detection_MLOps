@@ -24,11 +24,11 @@ This repository is prepared as a grading entry point: every required component h
 | Chapter 4 - CI/CD | **3 / 3** | Completed | GitHub Actions workflow installs dependencies, runs unit tests, runs Docker integration test, builds and pushes API/App Docker images to GHCR |
 | Chapter 5 - Observability | **2 / 2** | Completed | `/metrics`, Prometheus scraping, JSONL structured logs, Grafana dashboard with 4 panels, Prometheus alert rules and Alertmanager |
 | Git & Quality | **1 / 1** | Completed, with professor invite verified in GitHub UI | Descriptive commits, cleaned runtime artifacts, `.gitignore`, no tracked Python cache files, professor invitation to be checked in repository settings |
-| Bonus | **0 / +2** | Not claimed | No extra bonus component is claimed |
+| Bonus - Additional MLOps Component | **+2 / +2** | Completed | Data quality and drift monitoring report in `scripts/data_quality_report.py`, with runnable demo command and generated JSON report |
 
 **Claimed mandatory score: 18 / 18**  
-**Claimed bonus: 0 / 2**  
-**Claimed total: 18 / 20**
+**Claimed bonus: 2 / 2**  
+**Claimed total: 20 / 20**
 
 Detailed verification commands and representative successful outputs are provided below for each section.
 
@@ -505,4 +505,56 @@ python -m pytest api/tests -q
 
 ## Bonus
 
-No bonus component is claimed in this README.
+### Additional MLOps Component: Data Quality And Drift Monitoring
+
+**Claimed bonus: +2 / +2**
+
+This project adds a data quality and drift monitoring component for manual uploads and drone patrol detections. It checks whether detection data is operationally usable before field teams rely on it.
+
+Why it is relevant:
+
+- Drone detections can contain bad GPS coordinates, missing source/model fields, or low-confidence predictions.
+- A sudden increase in low-confidence detections can indicate model drift, new waste types, poor lighting, or camera issues.
+- The report gives a compact operational signal: `pass`, `warning`, or `fail`.
+
+Technical implementation:
+
+- Script: `scripts/data_quality_report.py`
+- Inputs: `data/app_detections.db` and `drone_patrol.db`
+- Output: `reports/data_quality_report.json`
+- Checks: GPS validity, confidence range, missing source/model fields, source distribution, model distribution, low-confidence count below `0.65`
+- Demo mode: `--demo` uses built-in sample detections so the bonus can be verified even before the full stack has generated databases
+
+Demonstration command:
+
+```bash
+python scripts/data_quality_report.py --demo
+```
+
+Expected output:
+
+```text
+Data quality status: warning
+Records analyzed: 3
+Quality score: 100.0%
+Low confidence count: 1
+Report written to: reports/data_quality_report.json
+```
+
+Example generated report:
+
+```json
+{
+  "component": "data_quality_and_drift_monitoring",
+  "status": "warning",
+  "records_analyzed": 3,
+  "quality_score_percent": 100.0,
+  "average_confidence": 0.7367,
+  "low_confidence_threshold": 0.65,
+  "low_confidence_count": 1,
+  "source_distribution": {
+    "manual": 1,
+    "drone_patrol": 2
+  }
+}
+```
