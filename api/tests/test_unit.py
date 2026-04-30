@@ -9,6 +9,7 @@ sys.path.insert(0, str(ROOT_DIR))
 
 os.environ.setdefault("API_DATA_DIR", str(ROOT_DIR / "data"))
 os.environ.setdefault("API_LOG_DIR", str(ROOT_DIR / "logs"))
+os.environ.setdefault("ENABLE_MLFLOW_BOOTSTRAP", "0")
 
 from api.main import app, DB_PATH, LOG_FILE
 import sqlite3
@@ -35,7 +36,8 @@ def setup_module() -> None:
             model_name TEXT NOT NULL,
             prediction TEXT NOT NULL,
             confiance REAL NOT NULL,
-            filename TEXT NOT NULL
+            filename TEXT NOT NULL,
+            drone_id TEXT
         )
         """
     )
@@ -48,6 +50,7 @@ def test_model_loads() -> None:
     assert response.status_code == 200
     payload = response.json()
     assert any(model["name"] == "yolov8" for model in payload)
+    assert all("version" in model and "registered_at" in model for model in payload)
 
 
 def test_predict_valid_image() -> None:
@@ -72,6 +75,30 @@ def test_predict_invalid_file() -> None:
     )
     assert response.status_code == 422
     assert "Uploaded file must be a valid image" in response.json()["detail"]
+
+
+def test_predict_unknown_model() -> None:
+    test_image_path = Path(__file__).resolve().parents[2] / "test_image.jpg"
+    with test_image_path.open("rb") as img_file:
+        response = client.post(
+            "/predict",
+            files={"file": ("test_image.jpg", img_file, "image/jpeg")},
+            data={"latitude": "48.8566", "longitude": "2.3522", "model_name": "unknown_model"},
+        )
+    assert response.status_code == 422
+    assert "Valid models" in response.json()["detail"]
+
+
+def test_predict_invalid_coordinates() -> None:
+    test_image_path = Path(__file__).resolve().parents[2] / "test_image.jpg"
+    with test_image_path.open("rb") as img_file:
+        response = client.post(
+            "/predict",
+            files={"file": ("test_image.jpg", img_file, "image/jpeg")},
+            data={"latitude": "999", "longitude": "2.3522", "model_name": "yolov8"},
+        )
+    assert response.status_code == 422
+    assert "valid coordinates" in response.json()["detail"]
 
 
 def test_metrics_and_structured_logging() -> None:

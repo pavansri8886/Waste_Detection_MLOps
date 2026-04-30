@@ -5,10 +5,13 @@ services:
       - 8000:8000
     volumes:
       - ./data:/data
+      - ./logs:/logs
     depends_on:
       - mlflow
     environment:
       - PYTHONUNBUFFERED=1
+      - API_LOG_DIR=/logs
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
 
   app:
     build: ./app
@@ -50,6 +53,7 @@ services:
       - 9090:9090
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
 
   grafana:
     image: grafana/grafana:10.0.0
