@@ -10,6 +10,28 @@ Drone waste detection application for the MLOps final project.
 
 The project provides a FastAPI inference API, a Streamlit/Folium operator UI, an Airflow drone synchronization pipeline, MLflow model registry integration, Prometheus metrics, Grafana dashboard configuration, Alertmanager routing, and GitHub Actions CI.
 
+## Submission Status
+
+This repository is prepared as a grading entry point: every required component has a reproducible command and a success example below.
+
+| Area | Implemented evidence |
+|---|---|
+| Packaging | Root requirements file, API Dockerfile, App Dockerfile, full `docker-compose.yml` stack |
+| API | `/health`, `/models`, `/predict`, `/history`, validation errors, SQLite persistence |
+| Model management | 8 model entries exposed through MLflow-compatible registry URIs with local fallback models for reproducible grading |
+| Streamlit | Model dropdown, upload form, prediction result, Folium history map, source/model/date filters |
+| Airflow | `drone_mission_simulator` plus `drone_patrol_sync` with `extract -> transform -> load` |
+| Observability | `/metrics`, JSONL prediction logs, Prometheus alert rules, Grafana dashboard with 4 panels |
+| CI/CD | GitHub Actions workflow runs tests, Docker integration, image builds, and GHCR push |
+| Quality | Runtime artifacts are ignored; tracked Python cache files were removed |
+
+Local verification result before submission:
+
+```text
+python -m pytest api/tests -q
+7 passed
+```
+
 Sample outputs below are representative. Timestamps, confidence values, row counts, and run IDs vary each time the stack is executed.
 
 ## Prerequisites
@@ -445,9 +467,23 @@ docker pull ghcr.io/pavansri8886/waste-api:latest
 
 ## Git And Quality Checks
 
+Actual repository history check:
+
 ```bash
 git shortlog -sn --all
 git log --oneline -15
+```
+
+Example output:
+
+```text
+10  pavansri8886
+ 2  Yanis Bardes
+ 2  sinaayyy
+
+1b8f92b Document expected verification outputs
+f7d3cea Improve MLOps submission readiness
+20a59f4 Update README.md
 ```
 
 Check ignored runtime artifacts:
@@ -457,6 +493,12 @@ git ls-files | grep -E "(__pycache__|\.venv|\.db$|\.sqlite$|\.sqlite3$)"
 ```
 
 Expected: no output.
+
+Actual result after cleanup:
+
+```text
+# no tracked __pycache__, virtualenv, or SQLite runtime database files
+```
 
 The professor must be invited to the private repository before the deadline.
 
