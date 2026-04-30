@@ -6,6 +6,7 @@ All the informations about project are in the project.md file
 
 
 **Members**: NAGANABOINA Pavan Kumar | pavankumar.naganaboina@edu.ece.fr
+
 **Repo**: `https://github.com/pavansri8886/Waste_Detection_MLOps`
 
 ![CI/CD](https://github.com/pavansri8886/Waste_Detection_MLOps/actions/workflows/ci.yml/badge.svg)
