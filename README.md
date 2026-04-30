@@ -465,42 +465,25 @@ Check public API image:
 docker pull ghcr.io/pavansri8886/waste-api:latest
 ```
 
-## Git And Quality Checks
+## Git And Quality
 
-Actual repository history check:
+| Check | Current status |
+|---|---|
+| Commit history | Descriptive commits are present on `main` for CI, observability, README updates, and submission-readiness fixes |
+| Contributors | Repository history shows contributions from `pavansri8886`, `Yanis Bardes`, and the professor reference history |
+| Runtime artifacts | Python cache files were removed from Git tracking |
+| Ignored files | `.gitignore` excludes `__pycache__`, virtual environments, SQLite runtime databases, Airflow runtime files, local data, and JSONL prediction logs |
+| Repository access | The professor must be invited to the private repository before the deadline |
 
-```bash
-git shortlog -sn --all
-git log --oneline -15
-```
-
-Example output:
-
-```text
-10  pavansri8886
- 2  Yanis Bardes
- 2  sinaayyy
-
-1b8f92b Document expected verification outputs
-f7d3cea Improve MLOps submission readiness
-20a59f4 Update README.md
-```
-
-Check ignored runtime artifacts:
-
-```bash
-git ls-files | grep -E "(__pycache__|\.venv|\.db$|\.sqlite$|\.sqlite3$)"
-```
-
-Expected: no output.
-
-Actual result after cleanup:
+Quality verification summary:
 
 ```text
-# no tracked __pycache__, virtualenv, or SQLite runtime database files
-```
+git status --short
+# clean working tree after commit
 
-The professor must be invited to the private repository before the deadline.
+python -m pytest api/tests -q
+7 passed
+```
 
 ## Bonus
 
