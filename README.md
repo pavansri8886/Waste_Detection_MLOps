@@ -10,6 +10,8 @@ Drone waste detection application for the MLOps final project.
 
 The project provides a FastAPI inference API, a Streamlit/Folium operator UI, an Airflow drone synchronization pipeline, MLflow model registry integration, Prometheus metrics, Grafana dashboard configuration, Alertmanager routing, and GitHub Actions CI.
 
+Sample outputs below are representative. Timestamps, confidence values, row counts, and run IDs vary each time the stack is executed.
+
 ## Prerequisites
 
 - Docker and Docker Compose
@@ -65,6 +67,27 @@ curl -s http://localhost:8000/models | python -m json.tool
 
 Expected: 8 model entries with `name`, `version`, `registered_at`, and `registry_uri`.
 
+Example output:
+
+```json
+[
+  {
+    "name": "yolov8",
+    "version": "1",
+    "registered_at": "2026-04-30T12:00:00Z",
+    "registry_uri": "models:/waste-detector-yolov8/Production"
+  },
+  {
+    "name": "rtdetr",
+    "version": "1",
+    "registered_at": "2026-04-30T12:00:00Z",
+    "registry_uri": "models:/waste-detector-rtdetr/Production"
+  }
+]
+```
+
+The real output contains all 8 configured models.
+
 Run a prediction:
 
 ```bash
@@ -76,6 +99,17 @@ curl -s -X POST http://localhost:8000/predict \
 ```
 
 Expected fields: `rubbish`, `confiance`, `model_used`, `timestamp`.
+
+Example output:
+
+```json
+{
+  "rubbish": "rubbish",
+  "confiance": 0.91,
+  "model_used": "yolov8",
+  "timestamp": "2026-04-30T14:22:11Z"
+}
+```
 
 Verify model selection:
 
@@ -89,6 +123,17 @@ curl -s -X POST http://localhost:8000/predict \
 
 Expected: `model_used` is `rtdetr`.
 
+Example output:
+
+```json
+{
+  "rubbish": "rubbish",
+  "confiance": 0.88,
+  "model_used": "rtdetr",
+  "timestamp": "2026-04-30T14:24:03Z"
+}
+```
+
 Verify validation errors:
 
 ```bash
@@ -101,6 +146,12 @@ curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8000/predict \
 
 Expected: `422`.
 
+Example output:
+
+```text
+422
+```
+
 ```bash
 curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8000/predict \
   -F "file=@requirements.txt" \
@@ -110,6 +161,12 @@ curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8000/predict \
 ```
 
 Expected: `422`.
+
+Example output:
+
+```text
+422
+```
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8000/predict \
@@ -121,10 +178,34 @@ curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8000/predict \
 
 Expected: `422`.
 
+Example output:
+
+```text
+422
+```
+
 Check history:
 
 ```bash
 curl -s http://localhost:8000/history | python -m json.tool
+```
+
+Example output:
+
+```json
+[
+  {
+    "timestamp": "2026-04-30T14:22:11Z",
+    "source": "manual",
+    "latitude": 48.8566,
+    "longitude": 2.3522,
+    "model_name": "yolov8",
+    "prediction": "rubbish",
+    "confiance": 0.91,
+    "filename": "upload_20260430142211000000_test_image.jpg",
+    "drone_id": null
+  }
+]
 ```
 
 ## Automated Tests
@@ -135,6 +216,12 @@ Local unit tests:
 python -m pytest api/tests/test_unit.py -v
 ```
 
+Expected output:
+
+```text
+6 passed
+```
+
 Docker-based integration test:
 
 ```bash
@@ -142,6 +229,12 @@ python -m pytest api/tests/test_integration.py -v
 ```
 
 The integration test builds the API Docker image, starts a container, sends real HTTP requests to `/health`, `/models`, `/predict`, and `/history`, then removes the container.
+
+Expected output:
+
+```text
+1 passed
+```
 
 ## Airflow Pipeline
 
@@ -152,12 +245,26 @@ docker compose exec airflow airflow dags list-runs \
   --dag-id drone_mission_simulator --output table
 ```
 
+Example output:
+
+```text
+dag_id                   run_id      state    run_type
+drone_mission_simulator  scheduled   success  scheduled
+```
+
 DAG 2 synchronizes drone detections every 10 minutes with three tasks:
 
 ```bash
 docker compose exec airflow airflow dags trigger drone_patrol_sync
 docker compose exec airflow airflow dags list-runs \
   --dag-id drone_patrol_sync --output table
+```
+
+Example output:
+
+```text
+dag_id             run_id      state    run_type
+drone_patrol_sync  manual__... success  manual
 ```
 
 Check task states for a run:
@@ -169,6 +276,15 @@ docker compose exec airflow airflow tasks states-for-dag-run \
 
 Expected tasks: `extract`, `transform`, `load`.
 
+Example output:
+
+```text
+task_id    state
+extract    success
+transform  success
+load       success
+```
+
 Verify confidence filtering and processed flags:
 
 ```bash
@@ -178,12 +294,25 @@ docker compose exec api sqlite3 /data/app_detections.db \
 
 Expected: value is at least `0.65` when drone rows exist.
 
+Example output:
+
+```text
+0.6512
+```
+
 ```bash
 docker compose exec airflow sqlite3 /data/drone_patrol.db \
   "SELECT processed, COUNT(*) FROM drone_detections GROUP BY processed;"
 ```
 
 Expected: loaded rows are marked `processed = 1`.
+
+Example output:
+
+```text
+0|23
+1|67
+```
 
 ## Streamlit Interface
 
@@ -213,10 +342,42 @@ Expected metrics include:
 - `ml_predictions_by_model_total`
 - `ml_validation_errors_total`
 
+Example output:
+
+```text
+ml_predictions_total 3.0
+ml_inference_latency_seconds_count 3.0
+ml_predictions_by_model_total{model="yolov8"} 3.0
+ml_validation_errors_total 0.0
+```
+
 Verify Prometheus scraping:
 
 ```bash
 curl -s "http://localhost:9090/api/v1/query?query=ml_predictions_total" | python -m json.tool
+```
+
+Example output:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "resultType": "vector",
+    "result": [
+      {
+        "metric": {
+          "__name__": "ml_predictions_total",
+          "job": "api"
+        },
+        "value": [
+          1777557600.0,
+          "3"
+        ]
+      }
+    ]
+  }
+}
 ```
 
 Verify structured prediction logs:
@@ -225,10 +386,22 @@ Verify structured prediction logs:
 tail -5 logs/predictions.jsonl
 ```
 
+Example output:
+
+```json
+{"timestamp":"2026-04-30T14:22:11Z","source":"manual","latitude":48.8566,"longitude":2.3522,"confiance":0.91,"model_name":"yolov8","latence_ms":42.7}
+```
+
 Verify Grafana dashboard file:
 
 ```bash
 python -c "import json; d=json.load(open('monitoring/grafana/dashboard.json')); panels=d.get('panels', []); print(len(panels)); assert len(panels) >= 4"
+```
+
+Expected output:
+
+```text
+4
 ```
 
 Open Grafana at http://localhost:3000 and check the `Waste Detection Dashboard`.
@@ -238,6 +411,12 @@ Verify Prometheus alert rules:
 ```bash
 curl -s http://localhost:9090/api/v1/rules | python -m json.tool
 curl -s http://localhost:9093/api/v2/status | python -m json.tool
+```
+
+Expected result:
+
+```text
+Prometheus returns at least one rule group, and Alertmanager returns a status response with cluster/status information.
 ```
 
 ## CI/CD
