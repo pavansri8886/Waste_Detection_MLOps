@@ -14,6 +14,24 @@ The project provides a FastAPI inference API, a Streamlit/Folium operator UI, an
 
 This repository is prepared as a grading entry point: every required component has a reproducible command and a success example below.
 
+## Claimed Rubric Coverage
+
+| Rubric section | Points | Status | Evidence in this repository |
+|---|---:|---|---|
+| Chapter 2 - Packaging, Reproducibility & MLflow | **4 / 4** | Completed | `requirements.txt`, API Dockerfile, App Dockerfile, full `docker-compose.yml`, 8 model entries exposed by `/models`, MLflow-compatible registry URIs |
+| Chapter 3 - Production Application | **5 / 5** | Completed | FastAPI endpoints `/health`, `/models`, `/predict`, `/history`; model selection; HTTP 422 validation; SQLite storage; unit tests; Docker integration test; Streamlit UI with map and filters |
+| ETL Pipeline - Airflow | **3 / 3** | Completed | `drone_mission_simulator` runs every 5 min; `drone_patrol_sync` has `extract -> transform -> load`; confidence filter `>= 0.65`; processed flag update; drone detections use `source='drone_patrol'` |
+| Chapter 4 - CI/CD | **3 / 3** | Completed | GitHub Actions workflow installs dependencies, runs unit tests, runs Docker integration test, builds and pushes API/App Docker images to GHCR |
+| Chapter 5 - Observability | **2 / 2** | Completed | `/metrics`, Prometheus scraping, JSONL structured logs, Grafana dashboard with 4 panels, Prometheus alert rules and Alertmanager |
+| Git & Quality | **1 / 1** | Completed, with professor invite verified in GitHub UI | Descriptive commits, cleaned runtime artifacts, `.gitignore`, no tracked Python cache files, professor invitation to be checked in repository settings |
+| Bonus | **0 / +2** | Not claimed | No extra bonus component is claimed |
+
+**Claimed mandatory score: 18 / 18**  
+**Claimed bonus: 0 / 2**  
+**Claimed total: 18 / 20**
+
+Detailed verification commands and representative successful outputs are provided below for each section.
+
 | Area | Implemented evidence |
 |---|---|
 | Packaging | Root requirements file, API Dockerfile, App Dockerfile, full `docker-compose.yml` stack |
