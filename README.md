@@ -1,11 +1,11 @@
-# Waste Detection MLOps — [Group Name]
+# Waste Detection MLOps
 
 All the informations about project are in the project.md file
 
 **Based Repo**: https://github.com/pavansri8886/Waste_Detection_MLOps
 
 
-**Members**: [First Last 1] · [First Last 2]
+**Members**: NAGANABOINA Pavan Kumar | pavankumar.naganaboina@edu.ece.fr
 **Repo**: `https://github.com/pavansri8886/Waste_Detection_MLOps`
 
 ![CI/CD](https://github.com/pavansri8886/Waste_Detection_MLOps/actions/workflows/ci.yml/badge.svg)
