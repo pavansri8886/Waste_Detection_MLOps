@@ -306,6 +306,8 @@ docker pull ghcr.io/pavansri8886/waste-api:latest
 # Must download without error
 ```
 
+> Verified: public image pull succeeds for `ghcr.io/pavansri8886/waste-api:latest`.
+
 ### Pipeline green + badge in README `0.5 pt`
 
 ```bash
